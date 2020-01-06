@@ -4,13 +4,13 @@ import bgu.spl.net.impl.rci.Command;
 
 import java.io.Serializable;
 
-public class LoginCommand implements Command<String> {
+public class ConnectCommand implements Command<String> {
 
     private String host;
     private String username;
     private String password;
 
-    public LoginCommand(String host, String username, String password) {
+    public ConnectCommand(String host, String username, String password) {
         this.host = host;
         this.username = username;
         this.password = password;
@@ -29,7 +29,7 @@ public class LoginCommand implements Command<String> {
     }
 
     @Override
-    public Serializable execute(String cmd) {
+    public Serializable execute(String arg) {
         return null;
     }
 }
