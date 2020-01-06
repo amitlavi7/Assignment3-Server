@@ -3,6 +3,9 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.api.StompMessagingProtocol;
 import bgu.spl.net.srv.Connections;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+
 public class StompMessagingProtocolImp implements StompMessagingProtocol {
 
     private boolean shouldTerminate = false;
@@ -13,7 +16,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     }
 
     @Override
-    public void process(String message) {
+    public void process(LinkedList<String> message) {
 
     }
 

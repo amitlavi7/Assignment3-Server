@@ -9,6 +9,11 @@ public class BorrowBookCommand implements Command<String> {
     private String genre;
     private String bookName;
 
+    public BorrowBookCommand(String genre, String bookName) {
+        this.genre = genre;
+        this.bookName = bookName;
+    }
+
     public String getGenre() {
         return genre;
     }

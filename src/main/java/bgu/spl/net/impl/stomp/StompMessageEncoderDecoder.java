@@ -3,23 +3,32 @@ package bgu.spl.net.impl.stomp;
 import bgu.spl.net.api.MessageEncoderDecoder;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
-public class StompMessageEncoderDecoder implements MessageEncoderDecoder<String> {
+public class StompMessageEncoderDecoder implements MessageEncoderDecoder<LinkedList<String>> {
 
     private byte[] bytes = new byte[1 << 10];
     private int len = 0;
+    private LinkedList<String> words = new LinkedList<>();
 
     @Override
-    public String decodeNextByte(byte nextByte) {
+    public LinkedList<String> decodeNextByte(byte nextByte) {
         if (nextByte == '\u0000') {
-            return popString();
+            return words;
+        }
+        if (nextByte == '\n') {
+            words.add(popString());
         }
         pushByte (nextByte);
         return null;
     }
 
     @Override
-    public byte[] encode(String message) {
+    public byte[] encode(LinkedList<String> words) {
+        String message = "";
+        for (String word: words) {
+            message = message + word + '\n';
+        }
         return (message + '\u0000').getBytes();
     }
 

@@ -8,6 +8,10 @@ public class JoinGenreReadingClubCommand implements Command<String> {
 
     private String Genere;
 
+    public JoinGenreReadingClubCommand(String genere) {
+        Genere = genere;
+    }
+
     public String getGenere() {
         return Genere;
     }

@@ -10,6 +10,12 @@ public class LoginCommand implements Command<String> {
     private String username;
     private String password;
 
+    public LoginCommand(String host, String username, String password) {
+        this.host = host;
+        this.username = username;
+        this.password = password;
+    }
+
     public String getHost() {
         return host;
     }

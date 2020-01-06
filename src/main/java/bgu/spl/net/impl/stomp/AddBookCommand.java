@@ -4,10 +4,15 @@ import bgu.spl.net.impl.rci.Command;
 
 import java.io.Serializable;
 
-public class AddbookCommand implements Command<String> {
+public class AddBookCommand implements Command<String> {
 
     private String genre;
     private String bookName;
+
+    public AddBookCommand(String genre, String bookName) {
+        this.genre = genre;
+        this.bookName = bookName;
+    }
 
     public String getGenre() {
         return genre;

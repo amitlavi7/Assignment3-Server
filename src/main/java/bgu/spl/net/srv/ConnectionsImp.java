@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImp<T> implements Connections<T> {
 
-    private ConcurrentHashMap<Integer, ConnectionHandler<T>> connectionsMap;
+    private ConcurrentHashMap<Integer, ConnectionHandler<T>> clients = new ConcurrentHashMap<>();
 
     @Override
     public boolean send(int connectionId, T msg) {
@@ -18,6 +18,7 @@ public class ConnectionsImp<T> implements Connections<T> {
 
     @Override
     public void disconnect(int connectionId) {
-
+//        synchronized (this?);
+        clients.remove(connectionId);
     }
 }

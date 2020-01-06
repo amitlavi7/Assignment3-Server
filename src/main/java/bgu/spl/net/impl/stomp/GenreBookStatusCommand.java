@@ -8,6 +8,10 @@ public class GenreBookStatusCommand implements Command<String> {
 
     private String genre;
 
+    public GenreBookStatusCommand(String genre) {
+        this.genre = genre;
+    }
+
     public String getGenre() {
         return genre;
     }

@@ -8,6 +8,11 @@ public class ExitGenreReadingClubCommand implements Command<String> {
 
     private String Genere;
 
+    public ExitGenreReadingClubCommand(String genere) {
+        Genere = genere;
+    }
+
+
     public String getGenere() {
         return Genere;
     }
