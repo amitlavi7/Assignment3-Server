@@ -1,6 +1,8 @@
 package bgu.spl.net.api;
 
+import bgu.spl.net.impl.rci.Command;
 import bgu.spl.net.srv.Connections;
+import bgu.spl.net.srv.Frame;
 
 import java.util.LinkedList;
 
@@ -10,7 +12,7 @@ public interface StompMessagingProtocol  {
 	**/
     void start(int connectionId, Connections<String> connections);
     
-    void process(LinkedList<String> message);
+    void process(Frame<String> message);
 	
 	/**
      * @return true if the connection should be terminated
