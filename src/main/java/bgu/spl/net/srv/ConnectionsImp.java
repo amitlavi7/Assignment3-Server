@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ConnectionsImp<T> implements Connections<T> {
 
     private ConcurrentHashMap<Integer, ConnectionHandler<T>> connectionHandlerMap = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, ConcurrentHashMap<Integer,String>> topicMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ConcurrentHashMap<Integer,String>> topicMap = new ConcurrentHashMap<>();//second hash, left - conectionid, right - subid
     private ConcurrentHashMap<String,String> usersDetailsMap = new ConcurrentHashMap<>();
     private HashMap<String,Boolean> activeUsers = new HashMap<>();
 

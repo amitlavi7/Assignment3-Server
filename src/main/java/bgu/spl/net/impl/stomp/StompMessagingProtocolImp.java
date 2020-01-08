@@ -23,20 +23,21 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     private ConnectionsImp<String> connections;
 
     private int connectionId;
-    private ConcurrentHashMap<String,String> topicList;
+    private ConcurrentHashMap<String,String> topicList;  //left - subid, right - topicname
     private String userName;
     @Override
     public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
         this.connections = (ConnectionsImp)connections;
-        topicList = new LinkedList<>();
+        topicList = new ConcurrentHashMap<>();
     }
 
     @Override
     public void process(Frame<String> message) {
         switch (message.getOpCode()) {
+            Frame frameToReturn;
             case 1:
-                connect((ConnectCommand) message);
+                frameToReturn = connect((ConnectCommand) message);
             case 2: {
                 if(userName != null ) {
                     connections.getActiveUsers().put(userName,false);
@@ -48,22 +49,26 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 if(userName != null){
                     String des = ((SubscribeCommand)message).getDestination();
                     String id  = ((SubscribeCommand)message).getId();
+                    Frame frameToReturn;
                     if(connections.getTopicMap().contains(des)) {
-                        if(!topicList.contains(id))
-                            connections.getTopicMap().get(des).put(connectionId,id);
+                        if(!topicList.contains(id)) {
+                            connections.getTopicMap().get(des).put(connectionId, id);
+                            frameToReturn = new Receipt(((SubscribeCommand)message).getReceipt());
+                        }
                         else
-                        
+                           frameToReturn = new Error("The user is already subscribed to this genre");
                     }
                     else{
-                        connections.getTopicMap().put(des,new ConcurrentLinkedQueue<Pair<Integer,Integer>>());
-                        connections.getTopicMap().get(des).//need to add
+                       connections.getTopicMap().put(des,new ConcurrentHashMap<>());
+                        connections.getTopicMap().get(des).put(connectionId,id);
+                        topicList.put(id,des);
                     }
                 }
             }
         }
     }
 
-    private void connect(ConnectCommand message) {
+    private Frame connect(ConnectCommand message) {
         String username = message.getUsername();
         String password = message.getPassword();
         Frame frameToReturn;
@@ -88,6 +93,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             frameToReturn = new ConnectedCommand("1.2");
             this.userName = username;
         }
+        return frameToReturn;
     }
 
     @Override
