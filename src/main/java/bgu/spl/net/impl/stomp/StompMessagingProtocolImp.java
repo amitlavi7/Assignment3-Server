@@ -34,8 +34,8 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
 
     @Override
     public void process(Frame<String> message) {
+        Frame frameToReturn;
         switch (message.getOpCode()) {
-            Frame frameToReturn;
             case 1:
                 frameToReturn = connect((ConnectCommand) message);
             case 2: {
@@ -49,7 +49,6 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 if(userName != null){
                     String des = ((SubscribeCommand)message).getDestination();
                     String id  = ((SubscribeCommand)message).getId();
-                    Frame frameToReturn;
                     if(connections.getTopicMap().contains(des)) {
                         if(!topicList.contains(id)) {
                             connections.getTopicMap().get(des).put(connectionId, id);
