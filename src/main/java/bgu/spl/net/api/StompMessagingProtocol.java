@@ -1,10 +1,8 @@
 package bgu.spl.net.api;
 
-import bgu.spl.net.impl.rci.Command;
+import bgu.spl.net.impl.stomp.framesToSend.Receipt;
 import bgu.spl.net.srv.Connections;
 import bgu.spl.net.srv.Frame;
-
-import java.util.LinkedList;
 
 public interface StompMessagingProtocol  {
 	/**

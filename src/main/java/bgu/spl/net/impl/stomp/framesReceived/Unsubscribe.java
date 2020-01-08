@@ -8,16 +8,20 @@ import java.io.Serializable;
 public class Unsubscribe implements Frame<String> {
 
     private String id;
-    private String destination;
+    private String receipt;
     private int opCode = 5;
 
-    public Unsubscribe(String id, String destination) {
+    public Unsubscribe(String id, String receipt) {
         this.id = id;
-        this.destination = destination;
+        this.receipt = receipt;
     }
 
-    public String getDestination() {
-        return destination;
+    public String getId() {
+        return id;
+    }
+
+    public String getReceipt() {
+        return receipt;
     }
 
     public int getOpCode() {

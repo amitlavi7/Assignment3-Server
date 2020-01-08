@@ -2,8 +2,8 @@ package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
 import bgu.spl.net.impl.stomp.framesReceived.ConnectCommand;
-import bgu.spl.net.impl.stomp.framesReceived.DisconnectCommand;
 import bgu.spl.net.impl.stomp.framesReceived.SubscribeCommand;
+import bgu.spl.net.impl.stomp.framesReceived.Unsubscribe;
 import bgu.spl.net.impl.stomp.framesToSend.ConnectedCommand;
 import bgu.spl.net.impl.stomp.framesToSend.Error;
 import bgu.spl.net.impl.stomp.framesToSend.Receipt;
@@ -11,10 +11,7 @@ import bgu.spl.net.srv.Connections;
 import bgu.spl.net.srv.ConnectionsImp;
 import bgu.spl.net.srv.Frame;
 
-import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class StompMessagingProtocolImp implements StompMessagingProtocol {
 
@@ -39,33 +36,51 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             case 1:
                 frameToReturn = connect((ConnectCommand) message);
             case 2: {
-                if(userName != null ) {
-                    connections.getActiveUsers().put(userName,false);
+                if (userName != null) {
+                    connections.getActiveUsers().put(userName, false);
                     Receipt receipt = new Receipt(Integer.toString(connectionId));
                     //dissconectuser
                 }
             }
-            case 4:{
-                if(userName != null){
-                    String des = ((SubscribeCommand)message).getDestination();
-                    String id  = ((SubscribeCommand)message).getId();
-                    if(connections.getTopicMap().contains(des)) {
-                        if(!topicList.contains(id)) {
+            case 4: {
+                if (userName != null) {
+                    String des = ((SubscribeCommand) message).getDestination();
+                    String id = ((SubscribeCommand) message).getId();
+                    if (connections.getTopicMap().contains(des)) {
+                        if (!topicList.contains(id)) {
                             connections.getTopicMap().get(des).put(connectionId, id);
-                            frameToReturn = new Receipt(((SubscribeCommand)message).getReceipt());
-                        }
-                        else
-                           frameToReturn = new Error("The user is already subscribed to this genre");
-                    }
-                    else{
-                       connections.getTopicMap().put(des,new ConcurrentHashMap<>());
-                        connections.getTopicMap().get(des).put(connectionId,id);
-                        topicList.put(id,des);
+                            frameToReturn = new Receipt(((SubscribeCommand) message).getReceipt());
+                        } else
+                            frameToReturn = new Error("The user is already subscribed to this genre");
+                    } else {
+                        connections.getTopicMap().put(des, new ConcurrentHashMap<>());
+                        connections.getTopicMap().get(des).put(connectionId, id);
+                        topicList.put(id, des);
                     }
                 }
             }
+            case 5: {
+                frameToReturn = unsubscribe((Unsubscribe)message);
+            }
         }
     }
+
+    private Frame unsubscribe(Unsubscribe message) {
+        if (userName != null) {
+            String topicId = message.getId();
+            String receiptId = message.getReceipt();
+            if (topicList.contains(topicId)) {
+                connections.getTopicMap().get(topicList.get(topicId)).remove(connectionId);
+                topicList.remove(topicId);
+                return new Receipt(receiptId);
+            } else {
+                return new Error("The user has not subscribed to this topic");
+            }
+        } else {
+            return new Error("User does not exist");
+        }
+    }
+
 
     private Frame connect(ConnectCommand message) {
         String username = message.getUsername();
