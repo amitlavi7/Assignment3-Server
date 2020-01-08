@@ -75,7 +75,8 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
             }
             case ("UNSUBSCRIBE"):{
                 String id = words.get(1).split(":")[1];
-                return new Unsubscribe(id);
+                String receipt = words.get(2).split(":")[1];
+                return new Unsubscribe(id, receipt);
             }
             default: return null;
         }

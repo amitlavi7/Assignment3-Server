@@ -23,4 +23,13 @@ public class Message implements Frame<String> {
     public int getOpCode() {
         return 0;
     }
+
+    public void setSub(String sub) {
+        this.sub = this.sub + sub;
+    }
+
+    public void increaseMsgId(String id){
+        this.id = this.id + id;
+    }
+
 }
