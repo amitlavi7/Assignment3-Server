@@ -12,6 +12,7 @@ import bgu.spl.net.srv.ConnectionsImp;
 import bgu.spl.net.srv.Frame;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class StompMessagingProtocolImp implements StompMessagingProtocol {
 
@@ -33,29 +34,33 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     public void process(Frame<String> message) {
         Frame frameToReturn;
         switch (message.getOpCode()) {
-            case 1:
+            case 1: {
                 frameToReturn = connect((ConnectCommand) message);
+                connections.send(connectionId,frameToReturn);
+            }
             case 2: {
-                if (userName != null) {
-                    connections.getActiveUsers().put(userName, false);
+                if(userName != null ) {
+                    connections.getActiveUsers().put(userName,false);
                     Receipt receipt = new Receipt(Integer.toString(connectionId));
                     //dissconectuser
                 }
             }
-            case 4: {
-                if (userName != null) {
-                    String des = ((SubscribeCommand) message).getDestination();
-                    String id = ((SubscribeCommand) message).getId();
-                    if (connections.getTopicMap().contains(des)) {
-                        if (!topicList.contains(id)) {
+            case 4:{
+                if(userName != null){
+                    String des = ((SubscribeCommand)message).getDestination();
+                    String id  = ((SubscribeCommand)message).getId();
+                    if(connections.getTopicMap().contains(des)) {
+                        if(!topicList.contains(id)) {
                             connections.getTopicMap().get(des).put(connectionId, id);
-                            frameToReturn = new Receipt(((SubscribeCommand) message).getReceipt());
-                        } else
-                            frameToReturn = new Error("The user is already subscribed to this genre");
-                    } else {
-                        connections.getTopicMap().put(des, new ConcurrentHashMap<>());
-                        connections.getTopicMap().get(des).put(connectionId, id);
-                        topicList.put(id, des);
+                            frameToReturn = new Receipt(((SubscribeCommand)message).getReceipt());
+                        }
+                        else
+                           frameToReturn = new Error("The user is already subscribed to this genre");
+                    }
+                    else{
+                       connections.getTopicMap().put(des,new ConcurrentHashMap<>());
+                        connections.getTopicMap().get(des).put(connectionId,id);
+                        topicList.put(id,des);
                     }
                 }
             }
