@@ -13,19 +13,29 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     private final StompMessagingProtocol protocol;
     private final MessageEncoderDecoder<T> encdec;
+    private ConnectionsImp<T> connections;
     private final Socket sock;
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
+    private int connectionId;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, StompMessagingProtocol protocol) {
+    public BlockingConnectionHandler(
+            Socket sock,
+            MessageEncoderDecoder<T> reader,
+            StompMessagingProtocol protocol,
+            ConnectionsImp<T> connections,int connectionId)
+    {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
+        this.connections = connections;
+        this.connectionId = connectionId;
     }
 
     @Override
     public void run() {
+        protocol.start(connectionId,(ConnectionsImp<String>)connections);
         try (Socket sock = this.sock) { //just for automatic closing
             int read;
 

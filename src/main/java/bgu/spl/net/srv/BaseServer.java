@@ -16,6 +16,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
     private ConnectionsImp<T> connections = new ConnectionsImp<>();
+    private int connectionId = 0;
 
     public BaseServer(
             int port,
@@ -45,10 +46,11 @@ public abstract class BaseServer<T> implements Server<T> {
                         clientSock,
                         encdecFactory.get(),
                         protocolFactory.get(),
-                        connections);
+                        connections,connectionId);
 
                 execute(handler);
             }
+            connectionId++;
         } catch (IOException ex) {
         }
 
