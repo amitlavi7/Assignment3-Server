@@ -1,9 +1,8 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
-import bgu.spl.net.impl.rci.Command;
 import bgu.spl.net.impl.stomp.framesReceived.ConnectCommand;
-import bgu.spl.net.impl.stomp.framesReceived.DisconnectCommand;
+import bgu.spl.net.impl.stomp.framesReceived.Unsubscribe;
 import bgu.spl.net.impl.stomp.framesToSend.ConnectedCommand;
 import bgu.spl.net.impl.stomp.framesToSend.Error;
 import bgu.spl.net.impl.stomp.framesToSend.Receipt;
@@ -11,7 +10,6 @@ import bgu.spl.net.srv.Connections;
 import bgu.spl.net.srv.ConnectionsImp;
 import bgu.spl.net.srv.Frame;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 
 public class StompMessagingProtocolImp implements StompMessagingProtocol {
@@ -44,6 +42,14 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             }
             case 4:{
 
+            }
+            case 5: {
+                if (userName != null) {
+                    String topic = ((Unsubscribe)message).getDestination();
+                    if (connections.getTopicMap().contains(topic))
+                        connections.getTopicMap().get(topic)
+                    Unsubscribe unsubscribe = new Unsubscribe(Integer.toString(connectionId));
+                }
             }
         }
     }

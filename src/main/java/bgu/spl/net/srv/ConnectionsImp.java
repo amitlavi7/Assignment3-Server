@@ -5,16 +5,18 @@ import bgu.spl.net.impl.stomp.framesReceived.SubscribeCommand;
 import jdk.internal.util.xml.impl.Pair;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionsImp<T> implements Connections<T> {
 
     private ConcurrentHashMap<Integer, ConnectionHandler<T>> connectionHandlerMap = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, ConcurrentLinkedQueue<Pair<Integer,Integer>>> topicMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ConcurrentLinkedQueue<IntPair>> topicMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String,String> usersDetailsMap = new ConcurrentHashMap<>();
     private HashMap<String,Boolean> activeUsers = new HashMap<>();
 
-    public ConcurrentHashMap<String, ConcurrentLinkedQueue<Pair<Integer, Integer>>> getTopicMap() {
+    public ConcurrentHashMap<String, ConcurrentLinkedQueue<IntPair>> getTopicMap() {
         return topicMap;
     }
 
@@ -46,10 +48,6 @@ public class ConnectionsImp<T> implements Connections<T> {
 
     public void addConnectionHandler(int id,ConnectionHandler<T> connectionHandler){
         connectionHandlerMap.put(id,connectionHandler);
-    }
-
-    public void addToTopicMap (SubscribeCommand subscriber) {
-        topicMap.put(subscriber.getDestination(), );
     }
 
     public void addUser (String username, String password) {
