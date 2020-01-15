@@ -31,7 +31,11 @@ public class ConnectionsImp<T> implements Connections<T> {
 
     @Override
     public boolean send(int connectionId, T msg) {
-        connectionHandlerMap.get(connectionId).send(msg);
+        if(msg != null) {
+            System.out.println("connection ID: " + connectionId);//////for debug
+            connectionHandlerMap.get(connectionId).send(msg);
+            return true;
+        }
 //TODO: figure out why bool
         return false;
     }

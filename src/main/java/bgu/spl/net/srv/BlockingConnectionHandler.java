@@ -41,18 +41,18 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
             in = new BufferedInputStream(sock.getInputStream());
             out = new BufferedOutputStream(sock.getOutputStream());
-
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 Frame<String> nextMessage = (Frame<String>) encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
+                    System.out.println("sending to process, opCode:" + nextMessage.getOpCode());
                      protocol.process(nextMessage);
                 }
             }
+            System.out.println("closing connection");
         close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Override
@@ -63,12 +63,14 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void send(T msg) {
-        try (Socket sock = this.sock) {
-            out = new BufferedOutputStream(sock.getOutputStream());
-            out.write(encdec.encode(msg));
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(msg!=null) {
+            try {
+                out.write(encdec.encode(msg));
+                System.out.println("message was sent");
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

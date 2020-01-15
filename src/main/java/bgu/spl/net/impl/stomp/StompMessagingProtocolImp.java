@@ -13,6 +13,7 @@ import bgu.spl.net.srv.Connections;
 import bgu.spl.net.srv.ConnectionsImp;
 import bgu.spl.net.srv.Frame;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,6 +26,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     private int connectionId;
     private ConcurrentHashMap<String,String> topicList;  //left - subid, right - topicname
     private String userName;
+    private int messageId = 0;
     @Override
     public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
@@ -37,26 +39,34 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         Frame frameToSend;
         switch (message.getOpCode()) {
             case 1: {
+                System.out.println("making connect");
                 frameToSend = connect((ConnectCommand) message);
                 connections.send(connectionId, frameToSend);
+                break;
             }
             case 2: {
+                System.out.println("making disconnect");
                 frameToSend = disconnect(connectionId);
                 connections.send(connectionId, frameToSend);
+                break;
             }
             case 3: {
                 String des = ((SendCommand)message).getDestination();
                 String body = ((SendCommand)message).getBody();
-                frameToSend = new Message("","",des,body);
+                frameToSend = new Message("","",des,body);//TODO: take care of the empty strings not needed
+                messageId++;
                 connections.send(des,frameToSend);
+                break;
             }
             case 4: {
                 frameToSend = subscribe((SubscribeCommand) message);
                 connections.send(connectionId, frameToSend);
+                break;
             }
             case 5: {
                 frameToSend = unsubscribe((Unsubscribe)message);
                 connections.send(connectionId, frameToSend);
+                break;
             }
         }
     }
@@ -64,6 +74,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     private Frame disconnect(int connectionId) {
         if (userName != null) {
             connections.getActiveUsers().put(userName, false);
+            //TODO:check if we need to remove user
         }
         shouldTerminate = true;
         return new Receipt(Integer.toString(connectionId));
@@ -97,7 +108,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         if (userName != null) {
             String topicId = message.getId();
             String receiptId = message.getReceipt();
-            if (topicList.contains(topicId)) {
+            if (topicList.containsKey(topicId)) {
                 connections.getTopicMap().get(topicList.get(topicId)).remove(connectionId);
                 topicList.remove(topicId);
                 return new Receipt(receiptId);
@@ -120,23 +131,23 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         if (connections.getUsersDetailsMap().containsKey((username))){
             if(connections.getUsersDetailsMap().get(message.getUsername()).equals((password))){
                 if(!connections.getActiveUsers().get(username)){
-                    frameToReturn = new ConnectedCommand("1.2");
+                    frameToReturn = new ConnectedCommand(message.getVersion());
                     this.userName = username;
                 }
                 else {
                     frameToReturn = new Error("User already logged in");
-                    shouldTerminate = true;
+//                    shouldTerminate = true;
                 }
             }
             else {
                 frameToReturn = new Error("Wrong password!");
-                shouldTerminate = true;
+//                shouldTerminate = true;
                 //TODO: really close the connection
             }
         } else {
             //create new user
             connections.addUser(username,password);
-            frameToReturn = new ConnectedCommand("1.2");
+            frameToReturn = new ConnectedCommand(message.getVersion());
             this.userName = username;
         }
         return frameToReturn;
@@ -145,6 +156,13 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     @Override
     public boolean shouldTerminate() {
         return shouldTerminate;
+    }
+
+    private String getIdByTopic (String topic) {
+        for (Map.Entry<String, String> entry : topicList.entrySet())
+            if (entry.getValue() == topic)
+                return entry.getKey();
+        return null;
     }
 
 }

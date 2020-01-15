@@ -12,8 +12,16 @@ public class Receipt implements Frame<String> {
         this.id = this.id + id;
     }
 
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int getOpCode() {
-        return 0;
+        return 4;
     }
 }

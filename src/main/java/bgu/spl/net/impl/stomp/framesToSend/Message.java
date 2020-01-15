@@ -19,9 +19,29 @@ public class Message implements Frame<String> {
         this.body = body;
     }
 
+    public String getMessgae() {
+        return messgae;
+    }
+
+    public String getSub() {
+        return sub;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDes() {
+        return des;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
     @Override
     public int getOpCode() {
-        return 0;
+        return 3;
     }
 
     public void setSub(String sub) {
