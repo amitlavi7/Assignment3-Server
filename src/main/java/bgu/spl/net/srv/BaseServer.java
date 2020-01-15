@@ -1,7 +1,6 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
-import bgu.spl.net.api.MessagingProtocol;
 import bgu.spl.net.api.StompMessagingProtocol;
 
 import java.io.IOException;
@@ -44,7 +43,8 @@ public abstract class BaseServer<T> implements Server<T> {
                         clientSock,
                         encdecFactory.get(),
                         protocolFactory.get(),
-                        connections,connectionId);
+                        connections,
+                        connectionId);
                 System.out.println("connecting with connection ID: " + connectionId);
                 connections.addConnectionHandler(connectionId,handler);
                 execute(handler);
