@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 public class Unsubscribe implements Frame<String> {
 
+    //TODO: add topic that you need to erase from
+
     private String id;
     private String receipt;
     private int opCode = 5;
