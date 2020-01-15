@@ -15,8 +15,17 @@ public class ConnectedCommand implements Frame<String> {
         this.version = "version:"+ version;
     }
 
+    public String getConnected() {
+        return connected;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     public int getOpCode() {
-        return 0;
+        return 1;
     }
 }
+

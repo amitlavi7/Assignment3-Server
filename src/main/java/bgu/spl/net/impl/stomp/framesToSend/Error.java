@@ -14,8 +14,16 @@ public class Error implements Frame<String> {
         this.causeOfError = causeOfError;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public String getCauseOfError() {
+        return causeOfError;
+    }
+
     @Override
     public int getOpCode() {
-        return 0;
+        return 2;
     }
 }

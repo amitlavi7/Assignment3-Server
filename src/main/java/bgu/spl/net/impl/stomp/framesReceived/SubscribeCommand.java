@@ -10,7 +10,7 @@ public class SubscribeCommand implements Frame<String> {
     private String destination;
     private String id;
     private String receipt;
-    private int opCode = 5;
+    private int opCode = 4;
 
     public SubscribeCommand(String destination, String id, String receipt) {
         this.destination = destination;
