@@ -43,6 +43,7 @@ public class ConnectionsImp<T> implements Connections<T> {
     public void send(String channel, T msg) {
         ConcurrentHashMap<Integer,String> toSend = topicMap.get(channel);
         for (Integer conId : toSend.keySet()){
+            System.out.println("Im inside for loop of send by topic");
             ((Message)msg).setSub(toSend.get(conId));
             ((Message)msg).increaseMsgId(String.valueOf(msgId++));
             connectionHandlerMap.get(conId).send(msg);

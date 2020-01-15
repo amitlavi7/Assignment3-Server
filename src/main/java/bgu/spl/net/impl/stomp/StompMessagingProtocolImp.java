@@ -1,10 +1,7 @@
 package bgu.spl.net.impl.stomp;
 
 import bgu.spl.net.api.StompMessagingProtocol;
-import bgu.spl.net.impl.stomp.framesReceived.ConnectCommand;
-import bgu.spl.net.impl.stomp.framesReceived.SendCommand;
-import bgu.spl.net.impl.stomp.framesReceived.SubscribeCommand;
-import bgu.spl.net.impl.stomp.framesReceived.Unsubscribe;
+import bgu.spl.net.impl.stomp.framesReceived.*;
 import bgu.spl.net.impl.stomp.framesToSend.ConnectedCommand;
 import bgu.spl.net.impl.stomp.framesToSend.Error;
 import bgu.spl.net.impl.stomp.framesToSend.Message;
@@ -26,7 +23,6 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
     private int connectionId;
     private ConcurrentHashMap<String,String> topicList;  //left - subid, right - topicname
     private String userName;
-    private int messageId = 0;
     @Override
     public void start(int connectionId, Connections<String> connections) {
         this.connectionId = connectionId;
@@ -46,7 +42,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             }
             case 2: {
                 System.out.println("making disconnect");
-                frameToSend = disconnect(connectionId);
+                frameToSend = disconnect(connectionId, (DisconnectCommand)message);
                 connections.send(connectionId, frameToSend);
                 break;
             }
@@ -54,7 +50,6 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 String des = ((SendCommand)message).getDestination();
                 String body = ((SendCommand)message).getBody();
                 frameToSend = new Message("","",des,body);//TODO: take care of the empty strings not needed
-                messageId++;
                 connections.send(des,frameToSend);
                 break;
             }
@@ -71,13 +66,14 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         }
     }
 
-    private Frame disconnect(int connectionId) {
+    private Frame disconnect(int connectionId,DisconnectCommand message) {
         if (userName != null) {
             connections.getActiveUsers().put(userName, false);
             //TODO:check if we need to remove user
+            //TODO: answer for the line above think that we dont need to remove
         }
         shouldTerminate = true;
-        return new Receipt(Integer.toString(connectionId));
+        return new Receipt(message.getReceipt());
     }
 
     private Frame subscribe(SubscribeCommand message) {
@@ -85,7 +81,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         if (userName != null) {
             String des = message.getDestination();
             String id = message.getId();
-            if (connections.getTopicMap().contains(des)) {
+            if (connections.getTopicMap().containsKey(des)) {
                 if (!topicList.contains(id)) {
                     connections.getTopicMap().get(des).put(connectionId, id);
                     return new Receipt(message.getReceipt());
