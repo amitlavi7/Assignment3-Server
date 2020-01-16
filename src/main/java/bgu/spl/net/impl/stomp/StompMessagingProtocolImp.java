@@ -68,12 +68,10 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
 
     private Frame disconnect(int connectionId,DisconnectCommand message) {
         if (userName != null) {
-            connections.getActiveUsers().put(userName, false);
-            //TODO:check if we need to remove user
-            //TODO: answer for the line above think that we dont need to remove
+            connections.getActiveUsers().replace(userName, false);
+
         }
-        shouldTerminate = true;
-        return new Receipt(message.getReceipt());
+        return new Receipt(message.getReceipt(),true);
     }
 
     private Frame subscribe(SubscribeCommand message) {
@@ -83,8 +81,8 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             String id = message.getId();
             if (connections.getTopicMap().containsKey(des)) {
                 if (!topicList.contains(id)) {
-                    connections.getTopicMap().get(des).put(connectionId, id);
-                    return new Receipt(message.getReceipt());
+                    connections.getTopicMap().get(des).putIfAbsent(connectionId, id);
+                    return new Receipt(message.getReceipt(),false);
                 } else
                     return new Error("The user is already subscribed to this genre");
                 //TODO:check if we need to terminate connection because of error
@@ -92,7 +90,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 connections.getTopicMap().put(des, new ConcurrentHashMap<>());
                 connections.getTopicMap().get(des).put(connectionId, id);
                 topicList.put(id, des);
-                return new Receipt(message.getReceipt());
+                return new Receipt(message.getReceipt(),false);
             }
         }
         else
@@ -107,7 +105,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             if (topicList.containsKey(topicId)) {
                 connections.getTopicMap().get(topicList.get(topicId)).remove(connectionId);
                 topicList.remove(topicId);
-                return new Receipt(receiptId);
+                return new Receipt(receiptId,false);
             } else {
                 return new Error("The user has not subscribed to this topic");
                 //TODO:check if we need to terminate connection because of error
