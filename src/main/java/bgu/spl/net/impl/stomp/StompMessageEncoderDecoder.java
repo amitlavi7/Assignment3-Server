@@ -22,12 +22,13 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
     public Frame<String> decodeNextByte(byte nextByte) {
         if (nextByte == '\u0000') {
             System.out.println("building frame");
-            words.add(popString());
+            words.addLast(popString()); //words.add
             return buildFrame();
         }
         if (nextByte == '\n') {
-            words.add(popString());
-
+            System.out.println("backslash n");
+            words.addLast(popString()); //words.add
+            return null;
         }
         pushByte (nextByte);
         return null;
@@ -86,6 +87,7 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
 
     private Frame<String> buildFrame(){
         System.out.println("got case: " + words.getFirst());
+        System.out.println(words.toString());
         switch (words.getFirst()){
             case ("CONNECT"): {
                 System.out.println("case: connect");
@@ -107,7 +109,8 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
             case ("SEND"): {
                 System.out.println("case: send");
                 String destination = words.get(1).split(":")[1];;
-                String body = words.get(2);
+                System.out.println("check for word: " + words.toString());
+                String body = words.get(3);///////////////stam besvil tom
                 words.clear();
                 return new SendCommand(destination,body);
             }
