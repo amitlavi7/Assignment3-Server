@@ -80,13 +80,9 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             String des = message.getDestination();
             String id = message.getId();
             if (connections.getTopicMap().containsKey(des)) {
-                if (!topicList.contains(id)) {
                     connections.getTopicMap().get(des).putIfAbsent(connectionId, id);
                     return new Receipt(message.getReceipt(),false);
-                } else
-                    return new Error("The user is already subscribed to this genre");
-                //TODO:check if we need to terminate connection because of error
-            } else {
+                } else {
                 connections.getTopicMap().put(des, new ConcurrentHashMap<>());
                 connections.getTopicMap().get(des).put(connectionId, id);
                 topicList.put(id, des);

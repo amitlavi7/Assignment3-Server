@@ -21,14 +21,14 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
     @Override
     public Frame<String> decodeNextByte(byte nextByte) {
         if (nextByte == '\u0000') {
-            System.out.println("building frame");
+//            System.out.println("building frame");
             words.addLast(popString()); //words.add
             return buildFrame();
         }
         if (nextByte == '\n') {
             System.out.println("backslash n");
             words.addLast(popString()); //words.add
-            return null;
+//            return null;
         }
         pushByte (nextByte);
         return null;
@@ -81,7 +81,7 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
     private String popString() {
         String res = new String(bytes,0,len);
         len = 0;
-        System.out.println(res);//////////for debug
+        System.out.print(res);//////////for debug
         return res;
     }
 
