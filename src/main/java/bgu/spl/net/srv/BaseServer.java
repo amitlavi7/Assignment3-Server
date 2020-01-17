@@ -45,12 +45,10 @@ public abstract class BaseServer<T> implements Server<T> {
                         protocolFactory.get(),
                         connections,
                         connectionId);
-                System.out.println("connecting with connection ID: " + connectionId);
                 connections.addConnectionHandler(connectionId,handler);
                 execute(handler);
-                connectionId++;// maybe in the while loop
+                connectionId++;
             }
-//            connectionId++;// maybe in the while loop
         } catch (IOException ex) {
         }
 

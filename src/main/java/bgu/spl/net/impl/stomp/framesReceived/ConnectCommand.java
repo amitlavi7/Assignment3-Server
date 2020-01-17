@@ -37,9 +37,3 @@ public class ConnectCommand implements Frame<String> {
 
 }
 
-//    @Override
-//    public String toString() {
-//        return "CONNECTED" + '\n' +
-//                "version:" + version + '\n';
-//    }
-//}

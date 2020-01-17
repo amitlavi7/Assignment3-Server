@@ -22,9 +22,4 @@ public class DisconnectCommand implements Frame<String> {
         return opCode;
     }
 
-//    @Override
-//    public String toString() {
-//        return "RECEIPT" + '\n' +
-//                "receipt-id:" + receipt + '\n';
-//    }
 }

@@ -35,13 +35,11 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         Frame frameToSend;
         switch (message.getOpCode()) {
             case 1: {
-                System.out.println("making connect");
                 frameToSend = connect((ConnectCommand) message);
                 connections.send(connectionId, frameToSend);
                 break;
             }
             case 2: {
-                System.out.println("making disconnect");
                 frameToSend = disconnect(connectionId, (DisconnectCommand)message);
                 connections.send(connectionId, frameToSend);
                 break;
@@ -49,7 +47,7 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             case 3: {
                 String des = ((SendCommand)message).getDestination();
                 String body = ((SendCommand)message).getBody();
-                frameToSend = new Message("","",des,body);//TODO: take care of the empty strings not needed
+                frameToSend = new Message("","",des,body);
                 connections.send(des,frameToSend);
                 break;
             }
@@ -92,7 +90,6 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
         }
         else
             return new Error("Username does not log in");
-        //TODO:check if we need to terminate connection because of error
     }
 
     private Frame unsubscribe(Unsubscribe message) {
@@ -105,11 +102,11 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 return new Receipt(receiptId,false);
            } else {
                 return null;
-                //TODO:check if we need to terminate connection because of error
+
             }
         } else {
             return null;
-            //TODO:check if we need to terminate connection because of error
+
 
         }
     }
@@ -127,13 +124,10 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 }
                 else {
                     frameToReturn = new Error("User already logged in");
-//                    shouldTerminate = true;
                 }
             }
             else {
                 frameToReturn = new Error("Wrong password!");
-//                shouldTerminate = true;
-                //TODO: really close the connection
             }
         } else {
             //create new user

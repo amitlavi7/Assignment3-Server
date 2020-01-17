@@ -29,7 +29,6 @@ public class ConnectionsImp<T> implements Connections<T> {
     @Override
     public boolean send(int connectionId, T msg) {
         if (msg != null) {
-            System.out.println("connection ID: " + connectionId);//////for debug
             connectionHandlerMap.get(connectionId).send(msg);
             if (msg.getClass() == Receipt.class) {
                 if (((Receipt) msg).isDisconnect()) {
@@ -50,7 +49,6 @@ public class ConnectionsImp<T> implements Connections<T> {
         topicMap.putIfAbsent(channel, new ConcurrentHashMap<>());
         ConcurrentHashMap<Integer, String> toSend = topicMap.get(channel);
         for (Integer conId : toSend.keySet()) {
-            System.out.println("Im inside for loop of send by topic");
             ((Message) msg).setSub(toSend.get(conId));
             ((Message) msg).increaseMsgId(String.valueOf(msgId++));
             connectionHandlerMap.get(conId).send(msg);

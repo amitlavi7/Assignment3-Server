@@ -21,14 +21,11 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
     @Override
     public Frame<String> decodeNextByte(byte nextByte) {
         if (nextByte == '\u0000') {
-//            System.out.println("building frame");
             words.addLast(popString()); //words.add
             return buildFrame();
         }
         if (nextByte == '\n') {
-            System.out.println("backslash n");
             words.addLast(popString()); //words.add
-//            return null;
         }
         pushByte (nextByte);
         return null;
@@ -36,10 +33,6 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
 
     @Override
     public byte[] encode(Frame<String> frame) {
-//        Field[] fields = frame.getClass().getDeclaredFields();
-//        StringBuilder frameToBytes = new StringBuilder();
-//        for(int i = 0; i < fields.length; i++)
-//            frameToBytes.append(fields[i]).append('\n');
           StringBuilder frameToBytes = new StringBuilder();
           switch (frame.getOpCode()) {
               case (1): { //connected
@@ -81,16 +74,12 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
     private String popString() {
         String res = new String(bytes,0,len);
         len = 0;
-        System.out.print(res);//////////for debug
         return res;
     }
 
     private Frame<String> buildFrame(){
-        System.out.println("got case: " + words.getFirst());
-        System.out.println(words.toString());
         switch (words.getFirst()){
             case ("CONNECT"): {
-                System.out.println("case: connect");
                 String version = words.get(1).split(":")[1];
                 String host = words.get(2).split(":")[1];
                 String login = words.get(3).split(":")[1];
@@ -99,7 +88,6 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
                 return new ConnectCommand(version,host ,login ,pass);
             }
             case ("SUBSCRIBE"): {
-                System.out.println("case: subscribe");
                 String destination = words.get(1).split(":")[1];
                 String id = words.get(2).split(":")[1];
                 String receipt = words.get(3).split(":")[1];
@@ -107,21 +95,17 @@ public class StompMessageEncoderDecoder implements MessageEncoderDecoder<Frame<S
                 return new SubscribeCommand(destination, id, receipt);
             }
             case ("SEND"): {
-                System.out.println("case: send");
                 String destination = words.get(1).split(":")[1];;
-                System.out.println("check for word: " + words.toString());
-                String body = words.get(3);///////////////stam besvil tom
+                String body = words.get(3);
                 words.clear();
                 return new SendCommand(destination,body);
             }
             case ("DISCONNECT"): {
-                System.out.println("case: disconnect");
                 String receipt = words.get(1).split(":")[1];
                 words.clear();
                 return new DisconnectCommand(receipt);
             }
             case ("UNSUBSCRIBE"):{
-                System.out.println("case: unsubscribe");
                 String id = words.get(1).split(":")[1];
                 String receipt = words.get(2).split(":")[1];
                 words.clear();
