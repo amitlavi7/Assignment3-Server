@@ -60,7 +60,8 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
             }
             case 5: {
                 frameToSend = unsubscribe((Unsubscribe)message);
-                connections.send(connectionId, frameToSend);
+                if(frameToSend != null)
+                    connections.send(connectionId, frameToSend);
                 break;
             }
         }
@@ -102,12 +103,12 @@ public class StompMessagingProtocolImp implements StompMessagingProtocol {
                 connections.getTopicMap().get(topicList.get(topicId)).remove(connectionId);
                 topicList.remove(topicId);
                 return new Receipt(receiptId,false);
-            } else {
-                return new Error("The user has not subscribed to this topic");
+           } else {
+                return null;
                 //TODO:check if we need to terminate connection because of error
             }
         } else {
-            return new Error("User does not exist");
+            return null;
             //TODO:check if we need to terminate connection because of error
 
         }
