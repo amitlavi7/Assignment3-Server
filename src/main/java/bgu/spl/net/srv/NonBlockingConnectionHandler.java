@@ -67,6 +67,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             };
         } else {
             releaseBuffer(buf);
+            System.out.println("closing connection");
+            for(String topic : connections.getTopicMap().keySet()){
+                connections.getTopicMap().get(topic).remove(connectionId);
+            }
             close();
             return null;
         }

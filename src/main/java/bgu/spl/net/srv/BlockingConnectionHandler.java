@@ -47,6 +47,9 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                      protocol.process(nextMessage);
                 }
             }
+            for(String topic : connections.getTopicMap().keySet()){
+                connections.getTopicMap().get(topic).remove(connectionId);
+            }
             System.out.println("closing connection");
         close();
         } catch (IOException ex) {
